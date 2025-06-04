@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NPS Quote Rotator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: sans-serif;
+      background: #121212;
+      color: #f0f0f0;
+      padding: 20px;
+      text-align: center;
+    }
+    #quote-box {
+      max-width: 800px;
+      font-size: 2rem;
+      transition: opacity 0.5s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div id="quote-box">Loading quote...</div>
+
+  <script>
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/1otK_SWz8x-hcNTulgtCNDb4x7DjFO4e7sFaQXqtRVoo/gviz/tq?tqx=out:csv";
+    const quoteBox = document.getElementById("quote-box");
+    let quotes = [];
+    let index = 0;
+
+    Papa.parse(sheetUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        quotes = results.data.map(row => row["Quote"]).filter(Boolean);
+        showQuote();
+        setInterval(showQuote, 8000); // rotate every 8 seconds
+      }
+    });
+
+    function showQuote() {
+      if (quotes.length === 0) return;
+      index = Math.floor(Math.random() * quotes.length);
+      quoteBox.style.opacity = 0;
+      setTimeout(() => {
+        quoteBox.textContent = quotes[index];
+        quoteBox.style.opacity = 1;
+      }, 500);
+    }
+  </script>
+</body>
+</html>
