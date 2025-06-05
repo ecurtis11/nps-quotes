@@ -4,7 +4,6 @@
   <title>NPS Quote Rotator</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     body {
       display: flex;
@@ -28,21 +27,23 @@
   <div id="quote-box">Loading quote...</div>
 
   <script>
-    const sheetUrl = "https://corsproxy.io/?" + encodeURIComponent("https://docs.google.com/spreadsheets/d/1otK_SWz8x-hcNTulgtCNDb4x7DjFO4e7sFaQXqtRVoo/gviz/tq?tqx=out:csv");
+    const sheetUrl = "https://script.google.com/macros/s/AKfycbwPCfeUtBgRyT6eE3UpJ7C3RDTKEvuimzD7d8nJHPhgfR2eY_17Z9wwt80_Bh-UIz9D/exec";
     const quoteBox = document.getElementById("quote-box");
     let quotes = [];
     let index = 0;
 
-    Papa.parse(sheetUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        quotes = results.data.map(row => row["Quote"]).filter(Boolean);
-        console.log("Parsed quotes:", quotes);
+    fetch(sheetUrl)
+      .then(response => response.json())
+      .then(data => {
+        quotes = data;
+        console.log("Fetched quotes:", quotes);
         showQuote();
         setInterval(showQuote, 8000); // rotate every 8 seconds
-      }
-    });
+      })
+      .catch(error => {
+        console.error("Failed to fetch quotes:", error);
+        quoteBox.textContent = "Failed to load quotes.";
+      });
 
     function showQuote() {
       if (quotes.length === 0) return;
