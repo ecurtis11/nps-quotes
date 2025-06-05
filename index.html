@@ -4,41 +4,58 @@
   <title>NPS Quote Rotator</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
+      background-color: #ffffff;
+      color: #7e3dd4;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 0;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       height: 100vh;
-      font-family: sans-serif;
-      background: #121212;
-      color: #f0f0f0;
-      padding: 20px;
       text-align: center;
     }
+    img.logo {
+      width: 220px;
+      margin-bottom: 20px;
+    }
     #quote-box {
-      max-width: 800px;
-      font-size: 2rem;
-      transition: opacity 0.5s ease-in-out;
+      max-width: 900px;
+      padding: 20px;
+      font-size: 1.8rem;
+      font-weight: 400;
+    }
+    .rating {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
+  <img src="Logo.png" alt="Homebase Logo" class="logo">
+  <div class="rating" id="rating"></div>
   <div id="quote-box">Loading quote...</div>
 
   <script>
     const sheetUrl = "https://script.google.com/macros/s/AKfycbwPCfeUtBgRyT6eE3UpJ7C3RDTKEvuimzD7d8nJHPhgfR2eY_17Z9wwt80_Bh-UIz9D/exec";
     const quoteBox = document.getElementById("quote-box");
+    const ratingBox = document.getElementById("rating");
     let quotes = [];
+    let ratings = [];
     let index = 0;
 
     fetch(sheetUrl)
       .then(response => response.json())
       .then(data => {
-        quotes = data;
-        console.log("Fetched quotes:", quotes);
+        quotes = data.map(entry => entry.Quote).filter(Boolean);
+        ratings = data.map(entry => entry["NPS Rating"]);
         showQuote();
-        setInterval(showQuote, 8000); // rotate every 8 seconds
+        setInterval(showQuote, 8000);
       })
       .catch(error => {
         console.error("Failed to fetch quotes:", error);
@@ -49,10 +66,13 @@
       if (quotes.length === 0) return;
       index = Math.floor(Math.random() * quotes.length);
       quoteBox.style.opacity = 0;
+      ratingBox.style.opacity = 0;
       setTimeout(() => {
         quoteBox.textContent = quotes[index];
+        ratingBox.textContent = `NPS Rating: ${ratings[index] || ""}`;
         quoteBox.style.opacity = 1;
-      }, 500);
+        ratingBox.style.opacity = 1;
+      }, 300);
     }
   </script>
 </body>
