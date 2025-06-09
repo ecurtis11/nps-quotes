@@ -68,6 +68,10 @@
       font-size: 1.6rem;
       cursor: pointer;
     }
+    .loading {
+      font-size: 1.2rem;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -75,11 +79,13 @@
   <img src="Logo.png" alt="Homebase Logo" class="logo">
   <div class="rating" id="rating"></div>
   <div id="quote-box">Loading quote...</div>
+  <div class="loading" id="loading-message">Loading quotes...</div>
 
   <script>
     const sheetUrl = "https://script.google.com/macros/s/AKfycbxZ4-tFal_hfzWChRdklMk-xlTOFPDsI7YIS22aGUJaFRPjPDZzQya6r6OXfbMy_n0T/exec";
     const quoteBox = document.getElementById("quote-box");
     const ratingBox = document.getElementById("rating");
+    const loadingMsg = document.getElementById("loading-message");
     const toggleIcon = document.getElementById("toggle-icon");
     let quotes = [];
     let ratings = [];
@@ -90,12 +96,14 @@
       .then(data => {
         quotes = data.map(entry => entry.Quote).filter(Boolean);
         ratings = data.map(entry => entry["NPS Rating"]);
+        loadingMsg.style.display = "none";
         showQuote();
         setInterval(showQuote, 8000);
       })
       .catch(error => {
         console.error("Failed to fetch quotes:", error);
         quoteBox.textContent = "Failed to load quotes.";
+        loadingMsg.style.display = "none";
       });
 
     function showQuote() {
